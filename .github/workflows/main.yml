@@ -13,29 +13,37 @@ permissions:
   id-token: write
 
 concurrency:
-  group: pages
+  group: github-pages
   cancel-in-progress: true
 
 jobs:
   deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
 
-    runs-on: ubuntu-latest
-
     steps:
+      # 1. Baixar o código do repositório
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # 2. Configurar o GitHub Pages
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
-      - name: Upload site
+      # 3. Preparar e enviar os arquivos do site
+      - name: Upload site artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          name: github-pages
+          path: ./
 
+      # 4. Publicar o site
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          artifact_name: github-pages
